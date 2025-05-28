@@ -1,0 +1,42 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+data = pd.read_csv('housing.csv')
+print("dataset loaded:")
+print(data.head())
+data = data.dropna()
+data = data.head(500)
+x = data[['median_income', 'total_rooms']]
+y = data['median_house_value']
+print(f"total houses: {len(data)}")
+print(f"features: {len(x.columns)}")
+print(f"average price: ${y.mean():,.0f}")
+x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_state=42)
+print(f"training samples: {len(x_train)}")
+print(f"test samples: {len(x_test)}")
+model = LinearRegression()
+model.fit(x_train, y_train)
+y_pred = model.predict(x_test)
+accuracy = model.score(x_test, y_test)
+print(f"accuracy: {accuracy:.3f}")
+plt.figure(figsize=(8, 6))
+plt.scatter(data['median_income'], data['median_house_value'], alpha=0.6, s=30)
+plt.xlabel('median income')
+plt.ylabel('house price')
+plt.title('house prices')
+plt.show()
+plt.figure(figsize=(8, 6))
+plt.scatter(y_test, y_pred, alpha=0.6, s=30)
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], 'r--', linewidth=2)
+plt.xlabel('actual price')
+plt.ylabel('predicted price')
+plt.title('actual vs predicted')
+plt.show()
+new_house_1 = [[5.0, 3000]]
+new_house_2 = [[8.0, 8000]]
+pred_1 = model.predict(new_house_1)
+pred_2 = model.predict(new_house_2)
+print(f"house 1 (income=5.0, rooms=3000): ${pred_1[0]:,.0f}")
+print(f"house 2 (income=8.0, rooms=8000): ${pred_2[0]:,.0f}")
